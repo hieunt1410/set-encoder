@@ -82,6 +82,3 @@ class RepeatRunDataset(RunDataset):
             targets = torch.cat([original_targets, repeat_targets], axis=1)
         sample = RankSample(sample.query_id, sample.query, doc_ids, docs, targets)
         return sample
-    
-if __name__ == "__main__":
-    register_rank_distillm_novelty()
