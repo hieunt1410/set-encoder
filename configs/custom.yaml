@@ -10,7 +10,6 @@ trainer:
     - class_path: ModelCheckpoint
   precision: bf16-mixed
   max_steps: 20000
-  gpus: 1
 data:
   class_path: LightningIRDataModule
   init_args:
