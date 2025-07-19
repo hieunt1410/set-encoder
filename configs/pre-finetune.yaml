@@ -10,7 +10,7 @@ data:
     train_dataset:
       class_path: set_encoder.data.RepeatRunDataset
       init_args:
-        run_path_or_id: task2-collie-2025
+        run_path_or_id: msmarco-passage/train/rank-distillm-colbert
         targets: relevance
         depth: 200
         sample_size: 8
