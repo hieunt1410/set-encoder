@@ -1,15 +1,30 @@
 seed_everything: 42
 trainer:
+  callbacks:
+    - class_path: RegisterLocalDatasetCallback
+      init_args:
+        dataset_id: task2-collie-2025
+        docs: data/task2-collie-2025-docs.tsv
+        queries: data/task2-collie-2025-queries.tsv
+        qrels: data/task2-collie-2025-qrels.qrels
+        scoreddocs: data/task2-collie-2025-scoreddocs.tsv
+    - class_path: ModelCheckpoint
   precision: bf16-mixed
   max_steps: 20000
 data:
   class_path: LightningIRDataModule
   init_args:
-    train_batch_size: 32
+    num_workers: 4
+    train_batch_size: 16
     train_dataset:
-      class_path: TupleDataset
+      class_path: set_encoder.data.RepeatRunDataset
       init_args:
-        tuples_dataset: task2-collie-2025
+        run_path_or_id: task2-collie-2025
+        targets: relevance
+        depth: 200
+        sample_size: 8
+        sampling_strategy: single_relevant
+        add_docs_not_in_ranking: true
 model:
   class_path: set_encoder.module.SetEncoderModule
   init_args:
@@ -24,7 +39,8 @@ model:
         add_extra_token: true
         sample_missing_docs: true
     loss_functions:
-      - class_path: RankNet
+      - class_path: InfoNCE
+      - class_path: set_encoder.loss.RepeatCrossEntropyLoss
 optimizer:
   class_path: torch.optim.AdamW
   init_args:
