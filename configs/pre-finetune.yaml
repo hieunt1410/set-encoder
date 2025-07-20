@@ -14,8 +14,8 @@ trainer:
 data:
   class_path: LightningIRDataModule
   init_args:
-    num_workers: 4
-    train_batch_size: 16
+    num_workers: 2
+    train_batch_size: 1
     train_dataset:
       class_path: set_encoder.data.RepeatRunDataset
       init_args:
