@@ -10,12 +10,12 @@ trainer:
         scoreddocs: data/task2-collie-2025-scoreddocs.tsv
     - class_path: ModelCheckpoint
   precision: bf16-mixed
-  max_steps: 20000
+  max_epochs: 10
 data:
   class_path: LightningIRDataModule
   init_args:
-    num_workers: 4
-    train_batch_size: 8
+    num_workers: 2
+    train_batch_size: 1
     train_dataset:
       class_path: RunDataset
       init_args:
@@ -27,7 +27,7 @@ data:
 model:
   class_path: set_encoder.module.SetEncoderModule
   init_args:
-    model_name_or_path: google/electra-base-discriminator
+    model_name_or_path: lightning_logs/version_2/huggingface_checkpoint
     # model_name_or_path: google/electra-large-discriminator
     config:
       class_path: SetEncoderConfig

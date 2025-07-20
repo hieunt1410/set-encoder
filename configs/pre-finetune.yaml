@@ -10,7 +10,7 @@ trainer:
         scoreddocs: data/task2-collie-2025-scoreddocs.tsv
     - class_path: ModelCheckpoint
   precision: bf16-mixed
-  max_steps: 20000
+  max_epochs: 3
 data:
   class_path: LightningIRDataModule
   init_args:

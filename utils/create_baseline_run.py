@@ -12,6 +12,7 @@ from pyserini.index.lucene import LuceneIndexer
 # from colbert import Indexer as ColBERTIndexer
 # from colbert.data import Queries
 # from colbert.infra import ColBERTConfig, Run, RunConfig
+from lightning_ir.data.external_datasets import register_new_dataset
 
 
 def load_collection(
@@ -247,6 +248,12 @@ def main(args=None):
         if run_file.exists() and not args.overwrite:
             print(f"run file {run_file} already exists, skipping")
             continue
+        dataset = register_new_dataset(
+            dataset_name,
+            docs=Path(__file__).parent.parent / "data" / "task2-collie-2025-docs.tsv",
+            queries=Path(__file__).parent.parent / "data" / "task2-collie-2025-queries.tsv",
+            qrels=Path(__file__).parent.parent / "data" / "task2-collie-2025-qrels.qrels",
+        )
         dataset = ir_datasets.load(dataset_name)
         dataset_base = ir_datasets.docs_parent_id(dataset_name)
 

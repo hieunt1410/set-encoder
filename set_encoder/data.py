@@ -13,9 +13,10 @@ def register_rank_distillm_novelty():
 
     register_new_dataset(
         "task2-collie-2025",
-        docs=Path(__file__).parent.parent / "data" / "task2-collie-2025-docs.jsonl",
-        queries=Path(__file__).parent.parent / "data" / "task2-collie-2025-queries.jsonl",
+        docs=Path(__file__).parent.parent / "data" / "task2-collie-2025-docs.tsv",
+        queries=Path(__file__).parent.parent / "data" / "task2-collie-2025-queries.tsv",
         qrels=Path(__file__).parent.parent / "data" / "task2-collie-2025-qrels.qrels",
+        scoreddocs=Path(__file__).parent.parent / "data" / "task2-collie-2025-scoreddocs.tsv",
     )
 
 

@@ -12,12 +12,16 @@ data:
     inference_datasets:
       - class_path: RunDataset
         init_args:
-          run_path_or_id: ./runs/bert-bi-encoder__task2-collie-2025.run
+          run_path_or_id: runs/bm25/task2-collie-2025.run
           depth: 100
           sampling_strategy: top
 model:
   class_path: CrossEncoderModule
   init_args:
-    model_name_or_path: webis/bert-bi-encoder
+    model_name_or_path: lightning_logs/version_6/huggingface_checkpoint
     evaluation_metrics:
-    - f1@1
+    - P@1
+    - R@1
+    - nDCG@1
+    - MAP@1
+    - MRR@1

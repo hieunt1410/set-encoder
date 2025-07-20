@@ -2,3 +2,7 @@
 env/
 data/
 do.ipynb
+lightning_logs/
+set_encoder/__pycache__/
+runs
+bm25_indexes
