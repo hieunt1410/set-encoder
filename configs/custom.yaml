@@ -4,8 +4,8 @@ trainer:
     - class_path: RegisterLocalDatasetCallback
       init_args:
         dataset_id: task2-collie-2025
-        docs: data/task2-collie-2025-docs.jsonl
-        queries: data/task2-collie-2025-queries.jsonl
+        docs: data/task2-collie-2025-docs.tsv
+        queries: data/task2-collie-2025-queries.tsv
         qrels: data/task2-collie-2025-qrels.qrels
         scoreddocs: data/task2-collie-2025-scoreddocs.tsv
     - class_path: ModelCheckpoint
