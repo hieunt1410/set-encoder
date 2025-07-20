@@ -24,8 +24,7 @@ model:
         add_extra_token: true
         sample_missing_docs: true
     loss_functions:
-      - class_path: InfoNCE
-      - class_path: set_encoder.loss.RepeatCrossEntropyLoss
+      - class_path: RankNet
 optimizer:
   class_path: torch.optim.AdamW
   init_args:
