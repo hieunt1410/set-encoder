@@ -5,7 +5,7 @@ from typing import Literal
 import pandas as pd
 import torch
 from lightning import Callback
-from lightning_ir.data.dataset import RankSample, RunDataset
+from lightning_ir.data.dataset import RankSample, RunDataset, TupleDataset
 from lightning_ir.data.external_datasets import register_new_dataset
 
 
