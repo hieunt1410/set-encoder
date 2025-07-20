@@ -1,12 +1,21 @@
 seed_everything: 42
 trainer:
+  callbacks:
+    - class_path: RegisterLocalDatasetCallback
+      init_args:
+        dataset_id: task2-collie-2025
+        docs: data/task2-collie-2025-docs.tsv
+        queries: data/task2-collie-2025-queries.tsv
+        qrels: data/task2-collie-2025-qrels.qrels
+        scoreddocs: data/task2-collie-2025-scoreddocs.tsv
+    - class_path: ModelCheckpoint
   precision: bf16-mixed
-  max_epochs: 3
+  max_steps: 20000
 data:
   class_path: LightningIRDataModule
   init_args:
     num_workers: 4
-    train_batch_size: 32
+    train_batch_size: 8
     train_dataset:
       class_path: RunDataset
       init_args:
@@ -18,8 +27,7 @@ data:
 model:
   class_path: set_encoder.module.SetEncoderModule
   init_args:
-    model_name_or_path: path-to-local-checkpoint
-    # model_name_or_path: google/electra-base-discriminator
+    model_name_or_path: google/electra-base-discriminator
     # model_name_or_path: google/electra-large-discriminator
     config:
       class_path: SetEncoderConfig
