@@ -8,10 +8,10 @@ import pandas as pd
 from tqdm import tqdm
 from pyserini.search.lucene import LuceneSearcher
 from pyserini.index.lucene import LuceneIndexer
-from colbert import Searcher as _ColBERTSearcher
-from colbert import Indexer as ColBERTIndexer
-from colbert.data import Queries
-from colbert.infra import ColBERTConfig, Run, RunConfig
+# from colbert import Searcher as _ColBERTSearcher
+# from colbert import Indexer as ColBERTIndexer
+# from colbert.data import Queries
+# from colbert.infra import ColBERTConfig, Run, RunConfig
 
 
 def load_collection(
@@ -104,79 +104,79 @@ class PyseriniSearcher(Searcher):
         index.close()
 
 
-class ColBERTSearcher(Searcher):
-    def __init__(self, index_dir: Path, checkpoint_path: Path) -> None:
-        super().__init__()
-        self.index_dir = index_dir
-        self.config = ColBERTConfig(
-            root=str(index_dir.parent),
-            index_name=index_dir.name,
-            index_path=str(index_dir),
-            index_root=str(index_dir.parent),
-            doc_maxlen=300,
-        )
-        self.checkpoint_path = checkpoint_path
-        self._searcher = None
+# class ColBERTSearcher(Searcher):
+#     def __init__(self, index_dir: Path, checkpoint_path: Path) -> None:
+#         super().__init__()
+#         self.index_dir = index_dir
+#         self.config = ColBERTConfig(
+#             root=str(index_dir.parent),
+#             index_name=index_dir.name,
+#             index_path=str(index_dir),
+#             index_root=str(index_dir.parent),
+#             doc_maxlen=300,
+#         )
+#         self.checkpoint_path = checkpoint_path
+#         self._searcher = None
 
-    @property
-    def searcher(self) -> _ColBERTSearcher:
-        if self._searcher is None:
-            self._searcher = _ColBERTSearcher(
-                index=self.index_dir.name,
-                config=self.config,
-                checkpoint=str(self.checkpoint_path),
-            )
-        return self._searcher
+#     @property
+#     def searcher(self) -> _ColBERTSearcher:
+#         if self._searcher is None:
+#             self._searcher = _ColBERTSearcher(
+#                 index=self.index_dir.name,
+#                 config=self.config,
+#                 checkpoint=str(self.checkpoint_path),
+#             )
+#         return self._searcher
 
-    def search(
-        self,
-        dataset: ir_datasets.Dataset,
-        k: int,
-        num_procs: int,
-        doc_ids: Optional[List[int]],
-        query_ids: Optional[Set[str]],
-        add_query: bool,
-    ) -> Iterator[pd.DataFrame]:
-        query_dict = {
-            query.query_id: query.text
-            for query in dataset.queries_iter()
-            if query_ids is None or query.query_id in query_ids
-        }
-        queries = Queries(data=query_dict)
-        ranking = self.searcher.search_all(queries, k=k)
+#     def search(
+#         self,
+#         dataset: ir_datasets.Dataset,
+#         k: int,
+#         num_procs: int,
+#         doc_ids: Optional[List[int]],
+#         query_ids: Optional[Set[str]],
+#         add_query: bool,
+#     ) -> Iterator[pd.DataFrame]:
+#         query_dict = {
+#             query.query_id: query.text
+#             for query in dataset.queries_iter()
+#             if query_ids is None or query.query_id in query_ids
+#         }
+#         queries = Queries(data=query_dict)
+#         ranking = self.searcher.search_all(queries, k=k)
 
-        for query_id, hits in ranking.data.items():
-            data = []
-            for hit in hits:
-                data.append([query_id, *hit])
-            df = pd.DataFrame(data, columns=["qid", "doc_id", "rank", "score"])
-            if doc_ids is not None:
-                df["doc_id"] = df["doc_id"].map(lambda x: doc_ids[x])
-            if add_query:
-                df["query"] = query_dict[query_id]
-            yield df
+#         for query_id, hits in ranking.data.items():
+#             data = []
+#             for hit in hits:
+#                 data.append([query_id, *hit])
+#             df = pd.DataFrame(data, columns=["qid", "doc_id", "rank", "score"])
+#             if doc_ids is not None:
+#                 df["doc_id"] = df["doc_id"].map(lambda x: doc_ids[x])
+#             if add_query:
+#                 df["query"] = query_dict[query_id]
+#             yield df
 
-    def index(
-        self,
-        dataset: ir_datasets.Dataset,
-        doc_fields: Optional[List[str]] = None,
-        overwrite: bool = False,
-    ) -> None:
-        if self.index_dir.exists() and not overwrite:
-            return
-        indexer = ColBERTIndexer(
-            checkpoint=str(self.checkpoint_path), config=self.config
-        )
-        collection = []
-        print("indexing collection...")
-        for _, contents in load_collection(dataset, doc_fields):
-            collection.append(contents)
-        indexer.index(
-            name=self.index_dir.name,
-            collection=collection,
-            collection_name=self.index_dir.name,
-            overwrite=overwrite,
-        )
+#     def index(
+#         self,
+#         dataset: ir_datasets.Dataset,
+#         doc_fields: Optional[List[str]] = None,
+#         overwrite: bool = False,
+#     ) -> None:
+#         if self.index_dir.exists() and not overwrite:
+#             return
+#         indexer = ColBERTIndexer(
+#             checkpoint=str(self.checkpoint_path), config=self.config
+#         )
+#         collection = []
+#         print("indexing collection...")
+#         for _, contents in load_collection(dataset, doc_fields):
+#             collection.append(contents)
+#         indexer.index(
+#             name=self.index_dir.name,
+#             collection=collection,
+#             collection_name=self.index_dir.name,
+#             overwrite=overwrite,
+#         )
 
 
 def create_run_file(
@@ -192,8 +192,8 @@ def create_run_file(
     system = None
     if isinstance(searcher, PyseriniSearcher):
         system = "pyserini-BM25"
-    elif isinstance(searcher, ColBERTSearcher):
-        system = "ColBERT"
+    # elif isinstance(searcher, ColBERTSearcher):
+    #     system = "ColBERT"
     with run_file.open("w") as f:
         for hits in searcher.search(
             dataset,
@@ -257,18 +257,19 @@ def main(args=None):
         if args.searcher == "bm25":
             searcher = PyseriniSearcher(index_dir)
         elif args.searcher == "colbert":
-            root_dir = str(index_dir.parent)
-            experiment_name = dataset_base
-            context = Run().context(
-                RunConfig(
-                    nranks=args.num_procs,
-                    experiment=experiment_name,
-                    root=root_dir,
-                    index_root=root_dir,
-                )
-            )
-            context.__enter__()
-            searcher = ColBERTSearcher(index_dir, args.checkpoint_path)
+            # root_dir = str(index_dir.parent)
+            # experiment_name = dataset_base
+            # context = Run().context(
+            #     RunConfig(
+            #         nranks=args.num_procs,
+            #         experiment=experiment_name,
+            #         root=root_dir,
+            #         index_root=root_dir,
+            #     )
+            # )
+            # context.__enter__()
+            # searcher = ColBERTSearcher(index_dir, args.checkpoint_path)
+            pass
         else:
             raise ValueError(f"unknown searcher type {args.searcher}")
 
